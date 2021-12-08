@@ -1,6 +1,6 @@
 package com.hyperleon.research.javassist;
 
-import com.hyperleon.research.javassist.target.Bar;
+import com.hyperleon.research.javassist.template.Bar;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
@@ -16,9 +16,8 @@ public class ClassGenerator {
     public static void main(String[] args) throws Exception {
         //classPool
         ClassPool classPool = ClassPool.getDefault();
-        classPool.appendClassPath("/Users/leon/project/javassist-research/target/classes/com/hyperleon/research/javassist/target");
 
-        CtClass interfaceCtClass = classPool.get("com.hyperleon.research.javassist.target.Bar");
+        CtClass interfaceCtClass = classPool.get("com.hyperleon.research.javassist.template.Bar");
 
         //ctClass
         CtClass ctClass = classPool.makeClass("CoolBar");
@@ -42,7 +41,7 @@ public class ClassGenerator {
         ctClass.setInterfaces(new CtClass[]{interfaceCtClass});
 
         //write class outputStream to file
-        ctClass.writeFile("/Users/leon/project/javassist-research/target/classes/com/hyperleon/research/javassist/target");
+        ctClass.writeFile();
 
         Bar bar = (Bar)ctClass.toClass().newInstance();
         System.out.println(bar.obtainAnything(() -> "javassist rule"));
