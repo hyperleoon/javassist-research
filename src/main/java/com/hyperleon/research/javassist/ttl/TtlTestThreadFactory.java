@@ -1,8 +1,10 @@
 package com.hyperleon.research.javassist.ttl;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import com.alibaba.ttl.TtlCopier;
 import com.sun.istack.internal.NotNull;
 
+import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -13,21 +15,52 @@ public class TtlTestThreadFactory<T> implements ThreadFactory {
 
     private final TransmittableThreadLocal<T> ttl;
 
+    private InheritableThreadLocal<T> inheritableThreadLocal;
+
     private final T childTtlValue;
+
+    private T childInheritableThreadLocalValue;
 
     public TtlTestThreadFactory(TransmittableThreadLocal<T> ttl,T childTtlValue) {
         this.ttl = ttl;
         this.childTtlValue = childTtlValue;
     }
 
+    public TtlTestThreadFactory(TransmittableThreadLocal<T> ttl,
+                                T childTtlValue,
+                                InheritableThreadLocal<T> inheritableThreadLocal,
+                                T childInheritableThreadLocalValue) {
+        this.ttl = ttl;
+        this.childTtlValue = childTtlValue;
+        this.inheritableThreadLocal = inheritableThreadLocal;
+        this.childInheritableThreadLocalValue = childInheritableThreadLocalValue;
+    }
+
     @Override
     public Thread newThread(@NotNull Runnable r) {
-        T backup = ttl.get();
-        //for chile thread to copy
-        ttl.set(this.childTtlValue);
+        T backupTllValue = ttl.get();
+        T backupInheritableThreadLocalValue = null;
+
+        if (Objects.nonNull(inheritableThreadLocal)) {
+            backupInheritableThreadLocalValue = inheritableThreadLocal.get();
+        }
+        setValueForChildThreadCopy();
         Thread t = new Thread(r);
-        //roll back
-        ttl.set(backup);
+
+        ttl.set(backupTllValue);
+
+        if (Objects.nonNull(inheritableThreadLocal)) {
+            inheritableThreadLocal.set(backupInheritableThreadLocalValue);
+        }
+
         return t;
     }
+
+    private void setValueForChildThreadCopy() {
+        ttl.set(childTtlValue);
+        if (Objects.nonNull(inheritableThreadLocal)) {
+            inheritableThreadLocal.set(childInheritableThreadLocalValue);
+        }
+    }
+
 }

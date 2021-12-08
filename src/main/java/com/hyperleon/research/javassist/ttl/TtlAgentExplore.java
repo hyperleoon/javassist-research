@@ -34,6 +34,7 @@ public class TtlAgentExplore {
 
         TTL.set(Thread.currentThread().getId() + ":ttl_new_value");
 
+        // java agent effect
         ttlTestExecutor.execute(runnable);
     }
 
