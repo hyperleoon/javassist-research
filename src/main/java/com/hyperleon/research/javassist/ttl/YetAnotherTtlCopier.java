@@ -22,7 +22,7 @@ public class YetAnotherTtlCopier<T> extends InheritableThreadLocal<T> implements
     public static void main(String[] args) {
 
         YetAnotherTtlCopier<String> yetAnotherTtlCopier = new YetAnotherTtlCopier<>();
-        TransmittableThreadLocal.Transmitter.registerThreadLocal(yetAnotherTtlCopier,yetAnotherTtlCopier);
+        TransmittableThreadLocal.Transmitter.registerThreadLocalWithShadowCopier(yetAnotherTtlCopier);
 
         TransmittableThreadLocal<String> ttl = new TransmittableThreadLocal<>();
 
